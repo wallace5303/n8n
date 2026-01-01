@@ -145,7 +145,8 @@
       "lodash-es": "4.17.23",
       "word-wrap@<=1.2.4": "1.2.4",
       "minimatch@<=5.1.8": "5.1.8",
-      "fast-xml-parser": "5.3.8"
+      "fast-xml-parser": "5.3.8",
+      "xlsx": "https://cdn.jsdelivr.net/npm/xlsx@0.20.2/xlsx-0.20.2.tgz"
     },
     "patchedDependencies": {
       "bull@4.16.4": "patches/bull@4.16.4.patch",
@@ -164,5 +165,10 @@
       "v-code-diff": "patches/v-code-diff.patch",
       "assert@2.1.0": "patches/assert@2.1.0.patch"
     }
+  },
+  "dependencies": {
+    "crawlee": "^3.16.0",
+    "dayjs": "^1.11.19",
+    "ts-essentials": "7.0.3"
   }
 }
