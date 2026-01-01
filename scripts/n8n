@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# n8n 服务管理脚本
+N8N_BIN="/Users/gsx/www/gofile/src/common/n8n/packages/cli/bin/n8n"
+N8N_PID_FILE="/Users/gsx/www/private_work/fn60g/sh/n8n.pid"
+N8N_LOG_FILE="/Users/gsx/www/logs/n8n/nohup.log"
+
+start() {
+    if [ -f "$N8N_PID_FILE" ]; then
+        PID=$(cat "$N8N_PID_FILE")
+        if ps -p $PID > /dev/null 2>&1; then
+            echo "n8n is already running (PID: $PID)"
+            return 1
+        else
+            rm -f "$N8N_PID_FILE"
+        fi
+    fi
+    
+    echo "Starting n8n..."
+    nohup "$N8N_BIN" >> "$N8N_LOG_FILE" 2>&1 &
+    PID=$!
+    echo $PID > "$N8N_PID_FILE"
+    echo "n8n started (PID: $PID)"
+    echo "Log file: $N8N_LOG_FILE"
+}
+
+stop() {
+    if [ ! -f "$N8N_PID_FILE" ]; then
+        echo "n8n is not running"
+        return 1
+    fi
+    
+    PID=$(cat "$N8N_PID_FILE")
+    if ! ps -p $PID > /dev/null 2>&1; then
+        echo "n8n is not running (stale PID file)"
+        rm -f "$N8N_PID_FILE"
+        return 1
+    fi
+    
+    echo "Stopping n8n (PID: $PID)..."
+    kill $PID
+    
+    for i in {1..30}; do
+        if ! ps -p $PID > /dev/null 2>&1; then
+            rm -f "$N8N_PID_FILE"
+            echo "n8n stopped"
+            return 0
+        fi
+        sleep 1
+    done
+    
+    echo "n8n did not stop gracefully, forcing..."
+    kill -9 $PID
+    rm -f "$N8N_PID_FILE"
+    echo "n8n stopped (forced)"
+}
+
+restart() {
+    echo "Restarting n8n..."
+    stop
+    sleep 2
+    start
+}
+
+status() {
+    if [ ! -f "$N8N_PID_FILE" ]; then
+        echo "n8n is not running"
+        return 1
+    fi
+    
+    PID=$(cat "$N8N_PID_FILE")
+    if ps -p $PID > /dev/null 2>&1; then
+        echo "n8n is running (PID: $PID)"
+        return 0
+    else
+        echo "n8n is not running (stale PID file)"
+        rm -f "$N8N_PID_FILE"
+        return 1
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
