@@ -52,3 +52,4 @@ ll ~/.n8n/
 # 安全 cookie，默认 true。如果使用frp等反向代理，需要设置为 false。
 N8N_SECURE_COOKIE=false
 ```
+
