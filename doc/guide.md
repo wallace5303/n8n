@@ -31,7 +31,8 @@ pnpm build
 pnpm start
 
 # 后台运行
-nohup ./packages/cli/bin/n8n > /Users/gsx/www/logs/n8n/n8n.log 2>&1 &
+# nohup ./packages/cli/bin/n8n > /Users/gsx/www/logs/n8n/n8n.log 2>&1 &
+nohup ./packages/cli/bin/n8n > /dev/null 2>&1 &
 ```
 
 ## 数据存储
