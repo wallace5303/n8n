@@ -133,7 +133,7 @@
       "diff": "8.0.3",
       "undici@6": "^6.23.0",
       "undici@7": "^7.18.2",
-      "xlsx": "npm:xlsx@0.20.2",
+      "xlsx": "https://cdn.jsdelivr.net/npm/xlsx@0.20.2/xlsx-0.20.2.tgz",
       "tar": "^7.5.3"
     },
     "patchedDependencies": {
