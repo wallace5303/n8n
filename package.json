@@ -152,5 +152,8 @@
       "v-code-diff": "patches/v-code-diff.patch",
       "assert@2.1.0": "patches/assert@2.1.0.patch"
     }
+  },
+  "dependencies": {
+    "ts-essentials": "7.0.3"
   }
 }

@@ -414,14 +414,20 @@ export class WorkflowRepository extends Repository<WorkflowEntity> {
 			folders: FolderWithWorkflowAndSubFolderCount[];
 		},
 	): WorkflowFolderUnionFull[] {
-		const workflowsMap = new Map(extraData.workflows.map((workflow) => [workflow.id, workflow]));
-		const foldersMap = new Map(extraData.folders.map((folder) => [folder.id, folder]));
+		const workflowsMap = new Map<
+			string,
+			ListQueryDb.Workflow.WithSharing | ListQueryDb.Workflow.Plain
+		>();
+		extraData.workflows.forEach((workflow) => workflowsMap.set(workflow.id, workflow));
+
+		const foldersMap = new Map<string, FolderWithWorkflowAndSubFolderCount>();
+		extraData.folders.forEach((folder) => foldersMap.set(folder.id, folder));
 
 		return baseData.map((item) => {
 			const lookupMap = item.resource === 'folder' ? foldersMap : workflowsMap;
 			const extraItem = lookupMap.get(item.id);
 
-			return extraItem ? { ...item, ...extraItem } : item;
+			return extraItem && typeof extraItem === 'object' ? { ...item, ...extraItem } : item;
 		});
 	}
 

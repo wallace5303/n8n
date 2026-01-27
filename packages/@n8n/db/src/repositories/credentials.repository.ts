@@ -106,7 +106,7 @@ export class CredentialsRepository extends Repository<CredentialsEntity> {
 
 		if (typeof filter.withRole === 'string' && filter.withRole !== '') {
 			filter.shared = {
-				...(filter?.shared ? filter.shared : {}),
+				...(typeof filter.shared === 'object' && filter.shared ? filter.shared : {}),
 				role: filter.withRole,
 			};
 			delete filter.withRole;
@@ -119,7 +119,7 @@ export class CredentialsRepository extends Repository<CredentialsEntity> {
 			typeof filter.user.id === 'string'
 		) {
 			filter.shared = {
-				...(filter?.shared ? filter.shared : {}),
+				...(typeof filter.shared === 'object' && filter.shared ? filter.shared : {}),
 				project: {
 					projectRelations: {
 						userId: filter.user.id,
