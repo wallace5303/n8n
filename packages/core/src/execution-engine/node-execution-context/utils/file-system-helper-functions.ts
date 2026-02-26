@@ -1,5 +1,4 @@
-import { isContainedWithin, safeJoinPath } from '@n8n/backend-common';
-import { SecurityConfig } from '@n8n/config';
+import { safeJoinPath } from '@n8n/backend-common';
 import { Container } from '@n8n/di';
 import { NodeOperationError } from 'n8n-workflow';
 import type { FileSystemHelperFunctions, INode, ResolvedFilePath } from 'n8n-workflow';
@@ -11,31 +10,9 @@ import {
 	stat as fsStat,
 	open as fsOpen,
 } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { posix, dirname, basename, join } from 'node:path';
+import { dirname, basename, join } from 'node:path';
 
-import {
-	BINARY_DATA_STORAGE_PATH,
-	BLOCK_FILE_ACCESS_TO_N8N_FILES,
-	CONFIG_FILES,
-	CUSTOM_EXTENSION_ENV,
-	UM_EMAIL_TEMPLATES_INVITE,
-	UM_EMAIL_TEMPLATES_PWRESET,
-} from '@/constants';
 import { InstanceSettings } from '@/instance-settings';
-
-const getAllowedPaths = () => {
-	const { restrictFileAccessTo } = Container.get(SecurityConfig);
-	if (restrictFileAccessTo === '') return [];
-
-	const allowedPaths = restrictFileAccessTo
-		.split(';')
-		.map((path) => path.trim())
-		.filter((path) => path)
-		.map((path) => (path.startsWith('~') ? path.replace('~', homedir()) : path));
-
-	return allowedPaths;
-};
 
 async function resolvePath(path: PathLike): Promise<ResolvedFilePath> {
 	const pathStr = path.toString();
@@ -54,44 +31,8 @@ async function resolvePath(path: PathLike): Promise<ResolvedFilePath> {
 	}
 }
 
-function isFilePatternBlocked(resolvedFilePath: ResolvedFilePath): boolean {
-	const { blockFilePatterns } = Container.get(SecurityConfig);
-
-	// Normalize path separators for cross-platform compatibility
-	const normalizedPath = posix.normalize(resolvedFilePath.replace(/\\/g, '/'));
-
-	return blockFilePatterns
-		.split(';')
-		.map((pattern) => pattern.trim())
-		.filter((pattern) => pattern)
-		.some((pattern) => {
-			try {
-				return new RegExp(pattern, 'mi').test(normalizedPath);
-			} catch {
-				return true;
-			}
-		});
-}
-
-function isFilePathBlocked(resolvedFilePath: ResolvedFilePath): boolean {
-	const allowedPaths = getAllowedPaths();
-	const blockFileAccessToN8nFiles = process.env[BLOCK_FILE_ACCESS_TO_N8N_FILES] !== 'false';
-
-	const restrictedPaths = blockFileAccessToN8nFiles ? getN8nRestrictedPaths() : [];
-	if (
-		restrictedPaths.some((restrictedPath) => isContainedWithin(restrictedPath, resolvedFilePath))
-	) {
-		return true;
-	}
-
-	if (isFilePatternBlocked(resolvedFilePath)) {
-		return true;
-	}
-
-	if (allowedPaths.length) {
-		return !allowedPaths.some((allowedPath) => isContainedWithin(allowedPath, resolvedFilePath));
-	}
-
+function isFilePathBlocked(_resolvedFilePath: ResolvedFilePath): boolean {
+	// Always return false to remove file access restrictions
 	return false;
 }
 
@@ -101,9 +42,7 @@ export const getFileSystemHelperFunctions = (node: INode): FileSystemHelperFunct
 		const pathIdentity = await fsStat(resolvedFilePath);
 		// Check that the path is allowed.
 		if (isFilePathBlocked(resolvedFilePath)) {
-			const allowedPaths = getAllowedPaths();
-			const message = allowedPaths.length ? ` Allowed paths: ${allowedPaths.join(', ')}` : '';
-			throw new NodeOperationError(node, `Access to the file is not allowed.${message}`, {
+			throw new NodeOperationError(node, 'Access to the file is not allowed.', {
 				level: 'warning',
 			});
 		}
@@ -280,34 +219,3 @@ export const getFileSystemHelperFunctions = (node: INode): FileSystemHelperFunct
 	resolvePath,
 	isFilePathBlocked,
 });
-
-/**
- * @returns The restricted paths for the n8n instance.
- */
-function getN8nRestrictedPaths() {
-	const { n8nFolder, staticCacheDir } = Container.get(InstanceSettings);
-	const restrictedPaths = [n8nFolder, staticCacheDir];
-
-	if (process.env[CONFIG_FILES]) {
-		restrictedPaths.push(...process.env[CONFIG_FILES].split(','));
-	}
-
-	if (process.env[CUSTOM_EXTENSION_ENV]) {
-		const customExtensionFolders = process.env[CUSTOM_EXTENSION_ENV].split(';');
-		restrictedPaths.push(...customExtensionFolders);
-	}
-
-	if (process.env[BINARY_DATA_STORAGE_PATH]) {
-		restrictedPaths.push(process.env[BINARY_DATA_STORAGE_PATH]);
-	}
-
-	if (process.env[UM_EMAIL_TEMPLATES_INVITE]) {
-		restrictedPaths.push(process.env[UM_EMAIL_TEMPLATES_INVITE]);
-	}
-
-	if (process.env[UM_EMAIL_TEMPLATES_PWRESET]) {
-		restrictedPaths.push(process.env[UM_EMAIL_TEMPLATES_PWRESET]);
-	}
-
-	return restrictedPaths;
-}
