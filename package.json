@@ -154,6 +154,8 @@
     }
   },
   "dependencies": {
+    "crawlee": "^3.16.0",
+    "dayjs": "^1.11.19",
     "ts-essentials": "7.0.3"
   }
 }
