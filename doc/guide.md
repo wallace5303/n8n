@@ -55,3 +55,8 @@ ll ~/.n8n/
 N8N_SECURE_COOKIE=false
 ```
 
+## 安装依赖包
+
+```
+pnpm add crawlee -w
+```
