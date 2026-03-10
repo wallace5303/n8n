@@ -87,5 +87,6 @@ pnpm build
 ```bash
 pnpm recursive exec rm -rf node_modules
 rm -rf node_modules
+pnpm build    
 ```
 
