@@ -57,6 +57,27 @@ N8N_SECURE_COOKIE=false
 
 ## 安装依赖包
 
+方式一，安装到根目录并改N8N_RUNNERS_ENABLED为非沙箱模式
+
+影响性能，且官方不推荐
+
 ```
 pnpm add crawlee -w
+```
+
+方式二，安装到代码节点相关的库, 也要使用非沙箱模式
+
+有没有办法在沙箱模式下运行？
+
+```
+# 编辑 packages/@n8n/task-runner/package.json
+"crawlee": "catalog:",
+
+# 编辑 pnpm-workspaces.yalm 
+catalog:
+    crawlee: 3.16.0
+
+# 安装和构建
+pnpm install
+pnpm build    
 ```
