@@ -73,11 +73,19 @@ pnpm add crawlee -w
 # 编辑 packages/@n8n/task-runner/package.json
 "crawlee": "catalog:",
 
-# 编辑 pnpm-workspaces.yalm 
+# 编辑 pnpm-workspaces.yalm
 catalog:
     crawlee: 3.16.0
 
 # 安装和构建
 pnpm install
-pnpm build    
+pnpm build
 ```
+
+## 循环删除子包
+
+```bash
+pnpm recursive exec rm -rf node_modules
+rm -rf node_modules
+```
+
