@@ -19,6 +19,9 @@ source /Users/gsx/.zshrc
 
 # 安装依赖
 pnpm install
+# install 报错，重新安装xcode，继续 pnpm install
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
 ```
 
 ## 运行
