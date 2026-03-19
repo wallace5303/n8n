@@ -19,6 +19,9 @@ source /Users/gsx/.zshrc
 
 # 安装依赖
 pnpm install
+# install 报错，重新安装xcode，继续 pnpm install
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
 ```
 
 ## 运行
@@ -82,10 +85,18 @@ pnpm install
 pnpm build
 ```
 
-## 循环删除子包
+## 循环删除子包，重新安装
 
 ```bash
 pnpm recursive exec rm -rf node_modules
 rm -rf node_modules
+rm -rf packages/*/node_modules
+rm -rf packages/@n8n/*/node_modules
+pnpm store prune
+# 如果不行，换 --no-frozen-lockfile
+pnpm install --frozen-lockfile
+or
+pnpm install --no-frozen-lockfile
+pnpm build
 ```
 
