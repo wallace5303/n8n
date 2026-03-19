@@ -19,6 +19,9 @@ source /Users/gsx/.zshrc
 
 # 安装依赖
 pnpm install
+# install 报错，重新安装xcode，继续 pnpm install
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
 ```
 
 ## 运行
@@ -82,10 +85,74 @@ pnpm install
 pnpm build
 ```
 
-## 循环删除子包
+## 循环删除子包，重新安装
 
 ```bash
 pnpm recursive exec rm -rf node_modules
 rm -rf node_modules
+rm -rf packages/*/node_modules
+rm -rf packages/@n8n/*/node_modules
+pnpm store prune
+# 如果不行，换 --no-frozen-lockfile
+pnpm install --frozen-lockfile
+or
+pnpm install --no-frozen-lockfile
+pnpm build
 ```
+
+## 压缩包
+
+### 生成 tar.gz
+
+```bash
+# 创建 tar.gz 压缩包，自动将软链接替换为实际文件
+tar --dereference -czf n8n-compiled.tar.gz -C /Users/gsx/www/gofile/src/common/n8n compiled
+
+# 打的压缩包可能有问题，先按下面处理
+# 找个目录去解压 tar.gz
+# 修改 semver 的代码
+#修改 /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources/compiled/node_modules/semver/classes/range.js ：
+
+// 第 201 行
+const LRU = require('lru-cache')
+const cache = new LRU({ max: 1000 })
+
+// 改为
+const { LRUCache } = require('lru-cache')
+const cache = new LRUCache({ max: 1000 })
+
+# 然后重新生产 tar.gz
+tar -czf compiled.tar.gz -C /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources compiled
+
+```
+
+### 生成 zip
+
+```bash
+# 或者创建 zip 压缩包（需要先复制一份）
+cp -rL /Users/gsx/www/gofile/src/common/n8n/compiled /tmp/compiled
+cd /tmp
+zip -r n8n-compiled.zip compiled
+rm -rf /tmp/compiled
+
+# 或者先复制再压缩
+# 复制整个目录，将软链接替换为实际文件
+cp -rL /Users/gsx/www/gofile/src/common/n8n/compiled /tmp/compiled
+
+# 创建 tar.gz
+cd /tmp
+tar -czf n8n-compiled.tar.gz compiled
+
+# 或者创建 zip
+zip -r n8n-compiled.zip compiled
+
+# 清理临时文件
+rm -rf /tmp/compiled
+```
+
+### 其他方式生成压缩包
+
+pnpm build:deploy 也不行，生成的 semver包里面还是有问题的代码
+
+
 
