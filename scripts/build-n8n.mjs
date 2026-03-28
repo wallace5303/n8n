@@ -28,7 +28,7 @@ const rootDir = isInScriptsDir ? path.join(scriptDir, '..') : scriptDir;
 
 // #region ===== Configuration =====
 const config = {
-	compiledAppDir: path.join(rootDir, 'compiled'),
+	compiledAppDir: path.join(rootDir, 'n8ncompiled'),
 	compiledTaskRunnerDir: path.join(rootDir, 'dist', 'task-runner-javascript'),
 	cliDir: path.join(rootDir, 'packages', 'cli'),
 	rootDir: rootDir,
