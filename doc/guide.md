@@ -155,4 +155,15 @@ rm -rf /tmp/compiled
 pnpm build:deploy 也不行，生成的 semver包里面还是有问题的代码
 
 
+## 中文替换
 
+1. 找到路径：C:\Users\xxxxxx\AppData\Local\npm-cache_npx\n8n\node_modules\n8n-editor-ui\dist （新版本也可能是C:\Users\xxxxxx\AppData\Roaming\npm\node_modules\n8n\node_modules\n8n-editor-ui\dist）
+2. 下载对应版本editor-ui.tar.gz文件
+3. 解压到 dist目录下替换
+4. 设置环境变量 N8N_DEFAULT_LOCALE=zh-CN，自行咨询AI设置方法
+5. 重启 n8n 服务
+
+```bash
+
+
+```
