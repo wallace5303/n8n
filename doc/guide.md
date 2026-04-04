@@ -106,7 +106,7 @@ pnpm build
 
 ```bash
 # 创建 tar.gz 压缩包，自动将软链接替换为实际文件
-tar --dereference -czf n8n-compiled.tar.gz -C /Users/gsx/www/gofile/src/common/n8n compiled
+tar --dereference -czf n8n-compiled.tar.gz -C /Users/gsx/www/gofile/src/common/n8n/compiled
 
 # 打的压缩包可能有问题，先按下面处理
 # 找个目录去解压 tar.gz
