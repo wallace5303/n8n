@@ -122,7 +122,7 @@ const { LRUCache } = require('lru-cache')
 const cache = new LRUCache({ max: 1000 })
 
 # 然后重新生产 tar.gz
-tar -czf compiled.tar.gz -C /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources compiled
+tar -czf compiled.tar.gz -C /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources/compiled
 
 ```
 
