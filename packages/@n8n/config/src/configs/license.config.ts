@@ -33,4 +33,8 @@ export class LicenseConfig {
 	/** Comma-separated list of disabled license features. Takes precedence over enabled features. */
 	@Env('N8N_LICENSE_FEATURES_DISABLED')
 	featuresDisabled: string = '';
+
+	/** Comma-separated list of license quota overrides. Format: "quota:key1=value1,quota:key2=value2". */
+	@Env('N8N_LICENSE_QUOTA')
+	quota: string = '';
 }

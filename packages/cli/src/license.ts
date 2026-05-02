@@ -405,6 +405,29 @@ export class License implements LicenseProvider {
 	}
 
 	getValue<T extends keyof FeatureReturnType>(feature: T): FeatureReturnType[T] {
+		const quotaOverrides = this.globalConfig.license.quota;
+
+		// 检查是否有配额环境变量覆盖
+		if (quotaOverrides) {
+			const quotaList = quotaOverrides.split(',').map((q) => q.trim());
+			for (const quotaItem of quotaList) {
+				const match = quotaItem.match(/^([^=]+)=(.+)$/);
+				if (match && match[1].trim() === feature) {
+					const value = match[2].trim();
+					// 尝试转换为数字
+					const numValue = Number(value);
+					if (!Number.isNaN(numValue)) {
+						return numValue as FeatureReturnType[T];
+					}
+					// 尝试转换为布尔值
+					if (value.toLowerCase() === 'true') return true as FeatureReturnType[T];
+					if (value.toLowerCase() === 'false') return false as FeatureReturnType[T];
+					// 返回字符串
+					return value as FeatureReturnType[T];
+				}
+			}
+		}
+
 		return this.manager?.getFeatureValue(feature) as FeatureReturnType[T];
 	}
 
