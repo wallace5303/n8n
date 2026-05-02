@@ -323,7 +323,9 @@ export class Telemetry {
 			userId: `${instanceId}${user_id ? `#${user_id}` : ''}`,
 			event: eventName,
 			properties: updatedProperties,
-			context: {},
+			context: {
+				ip: '0.0.0.0',
+			},
 		};
 
 		// Build the actual payload that will be sent to RudderStack (with fake IP)
