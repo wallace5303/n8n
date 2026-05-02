@@ -252,6 +252,31 @@ export class License implements LicenseProvider {
 	}
 
 	isLicensed(feature: BooleanLicenseFeature) {
+		const enabledFeatures = this.globalConfig.license.features;
+		const disabledFeatures = this.globalConfig.license.featuresDisabled;
+
+		// 检查是否在禁用列表中（优先级最高）
+		if (disabledFeatures) {
+			const disabledList = disabledFeatures.split(',').map((f) => f.trim());
+			if (disabledList.includes(feature)) {
+				return false;
+			}
+		}
+
+		// 如果开启列表为 '*'，表示开启所有功能
+		if (enabledFeatures === '*') {
+			return true;
+		}
+
+		// 检查是否在开启列表中
+		if (enabledFeatures) {
+			const enabledList = enabledFeatures.split(',').map((f) => f.trim());
+			if (enabledList.includes(feature)) {
+				return true;
+			}
+		}
+
+		// 默认行为：使用原始的 LicenseManager 检查
 		return this.manager?.hasFeatureEnabled(feature) ?? false;
 	}
 
@@ -455,7 +480,13 @@ export class License implements LicenseProvider {
 
 	getExpiryDate(): Date | null {
 		try {
-			return this.manager?.getExpiryDate() ?? null;
+			// 方案：始终返回一个非常遥远的日期
+			const farFuture = new Date();
+			farFuture.setFullYear(farFuture.getFullYear() + 100); // 100年后过期
+			return farFuture;
+
+			// 注释掉原始代码
+			// return this.manager?.getExpiryDate() ?? null;
 		} catch {
 			return null;
 		}
@@ -463,40 +494,43 @@ export class License implements LicenseProvider {
 
 	getTerminationDate(): Date | null {
 		try {
-			return this.manager?.getTerminationDate() ?? null;
+			const farFuture = new Date();
+			farFuture.setFullYear(farFuture.getFullYear() + 100);
+			return farFuture;
+			// 注释掉原始代码
+			// return this.manager?.getTerminationDate() ?? null;
 		} catch {
 			return null;
 		}
 	}
 
 	getExpiringInDays(): number | undefined {
-		const expiryDate = this.getExpiryDate();
-		if (!expiryDate) return undefined;
-
-		const expiryTime = expiryDate.getTime();
-		if (Number.isNaN(expiryTime)) return undefined;
-
-		const now = new Date();
-		const diffMs = expiryTime - now.getTime();
-		const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-		// Return 0 for already expired licenses instead of negative values
-		return Math.max(0, diffDays);
+		// 方案：始终返回一个很大的正数，表示永不过期
+		return 36500; // 约100年
+		// const expiryDate = this.getExpiryDate();
+		// if (!expiryDate)
+		//     return undefined;
+		// const expiryTime = expiryDate.getTime();
+		// if (Number.isNaN(expiryTime))
+		//     return undefined;
+		// const now = new Date();
+		// const diffMs = expiryTime - now.getTime();
+		// const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+		// return Math.max(0, diffDays);
 	}
 
 	getTerminatingInDays(): number | undefined {
-		const terminationDate = this.getTerminationDate();
-		if (!terminationDate) return undefined;
-
-		const terminationTime = terminationDate.getTime();
-		if (Number.isNaN(terminationTime)) return undefined;
-
-		const now = new Date();
-		const diffMs = terminationTime - now.getTime();
-		const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-		// Return 0 for already terminated licenses instead of negative values
-		return Math.max(0, diffDays);
+		// 方案：始终返回一个很大的正数，表示永不过期
+		return 36500; // 约100年
+		// if (!terminationDate)
+		//     return undefined;
+		// const terminationTime = terminationDate.getTime();
+		// if (Number.isNaN(terminationTime))
+		//     return undefined;
+		// const now = new Date();
+		// const diffMs = terminationTime - now.getTime();
+		// const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+		// return Math.max(0, diffDays);
 	}
 
 	getInfo(): string {

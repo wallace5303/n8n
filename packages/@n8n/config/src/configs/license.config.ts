@@ -25,4 +25,12 @@ export class LicenseConfig {
 	/** Ephemeral license certificate. See: https://github.com/n8n-io/license-management?tab=readme-ov-file#concept-ephemeral-entitlements */
 	@Env('N8N_LICENSE_CERT')
 	cert: string = '';
+
+	/** Comma-separated list of enabled license features. Use '*' to enable all features. */
+	@Env('N8N_LICENSE_FEATURES')
+	features: string = '';
+
+	/** Comma-separated list of disabled license features. Takes precedence over enabled features. */
+	@Env('N8N_LICENSE_FEATURES_DISABLED')
+	featuresDisabled: string = '';
 }

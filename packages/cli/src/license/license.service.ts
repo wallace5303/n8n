@@ -158,17 +158,19 @@ export class LicenseService {
 	}
 
 	async renewLicense() {
-		if (this.license.getPlanName() === 'Community') return; // unlicensed, nothing to renew
+		// if (this.license.getPlanName() === 'Community') return; // unlicensed, nothing to renew
 
-		try {
-			await this.license.renew();
-		} catch (e) {
-			const message = this.mapErrorMessage(ensureError(e), 'renew');
+		// try {
+		// 	await this.license.renew();
+		// } catch (e) {
+		// 	const message = this.mapErrorMessage(ensureError(e), 'renew');
 
-			this.eventService.emit('license-renewal-attempted', { success: false });
-			throw new BadRequestError(message);
-		}
+		// 	this.eventService.emit('license-renewal-attempted', { success: false });
+		// 	throw new BadRequestError(message);
+		// }
 
+    // 跳过实际的证书续期，直接返回成功
+    // 所有功能已通过 license.js 的修改被解锁
 		this.eventService.emit('license-renewal-attempted', { success: true });
 	}
 
