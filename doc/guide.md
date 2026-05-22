@@ -124,6 +124,9 @@ const cache = new LRU({ max: 1000 })
 const { LRUCache } = require('lru-cache')
 const cache = new LRUCache({ max: 1000 })
 
+# 替换 env
+
+
 # 然后重新生产 tar.gz；-C 切换目录，后面是文件名
 tar -czf compiled.tar.gz -C /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources compiled
 
