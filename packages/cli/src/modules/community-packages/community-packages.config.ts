@@ -27,6 +27,14 @@ export class CommunityPackagesConfig {
 	@Env('N8N_COMMUNITY_PACKAGES_PREVENT_LOADING')
 	preventLoading: boolean = false;
 
+	/** Absolute path to npm executable for installing community packages */
+	@Env('N8N_NPM_PATH')
+	npmPath: string = 'npm';
+
+	/** Absolute path to tar executable for extracting community packages */
+	@Env('N8N_TAR_PATH')
+	tarPath: string = 'tar';
+
 	/** Current AI Node SDK version from @n8n/ai-utilities, sent to Strapi API */
 	readonly aiNodeSdkVersion: number = AI_NODE_SDK_VERSION;
 }

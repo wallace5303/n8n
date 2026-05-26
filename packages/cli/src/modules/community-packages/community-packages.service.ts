@@ -394,10 +394,10 @@ export class CommunityPackagesService {
 		this.checkInstallPermissions(shouldValidateChecksum);
 
 		if (options.checksum) {
-			await verifyIntegrity(packageName, packageVersion, this.getNpmRegistry(), options.checksum);
+			await verifyIntegrity(packageName, packageVersion, this.getNpmRegistry(), options.checksum, this.config.npmPath);
 		}
 
-		await checkIfVersionExistsOrThrow(packageName, packageVersion, this.getNpmRegistry());
+		await checkIfVersionExistsOrThrow(packageName, packageVersion, this.getNpmRegistry(), this.config.npmPath);
 
 		try {
 			await this.downloadPackage(packageName, packageVersion);
@@ -502,13 +502,14 @@ export class CommunityPackagesService {
 		const tarOutput = await executeNpmCommand(
 			['pack', `${packageName}@${packageVersion}`, `--registry=${registry}`, '--quiet'],
 			{ cwd: this.downloadFolder },
+			this.config.npmPath,
 		);
 
 		const tarballName = tarOutput?.trim();
 
 		try {
 			await asyncExecFile(
-				'tar',
+				this.config.tarPath,
 				['-xzf', tarballName, '-C', packageDirectory, '--strip-components=1'],
 				{ cwd: this.downloadFolder },
 			);
@@ -532,7 +533,9 @@ export class CommunityPackagesService {
 
 			await executeNpmCommand(['install', ...this.getNpmInstallArgs()], {
 				cwd: packageDirectory,
-			});
+			},
+			this.config.npmPath,
+			);
 			await this.updatePackageJsonDependency(packageName, packageJson.version);
 		} finally {
 			await rm(join(this.downloadFolder, tarballName));

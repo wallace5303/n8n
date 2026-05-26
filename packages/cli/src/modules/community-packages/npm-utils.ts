@@ -54,11 +54,12 @@ function matchesErrorPattern(message: string, patterns: readonly string[]): bool
 export async function executeNpmCommand(
 	args: string[],
 	options: NpmCommandOptions = {},
+	npmPath: string = 'npm',
 ): Promise<string> {
 	const { cwd, doNotHandleError } = options;
 
 	try {
-		const { stdout } = await asyncExecFile('npm', args, cwd ? { cwd } : undefined);
+		const { stdout } = await asyncExecFile(npmPath, args, cwd ? { cwd } : undefined);
 		return typeof stdout === 'string' ? stdout : stdout.toString();
 	} catch (error) {
 		if (doNotHandleError) {
@@ -104,6 +105,7 @@ export async function verifyIntegrity(
 	version: string,
 	registryUrl: string,
 	expectedIntegrity: string,
+	npmPath: string = 'npm',
 ) {
 	const url = `${sanitizeRegistryUrl(registryUrl)}/${encodeURIComponent(packageName)}`;
 
@@ -130,6 +132,7 @@ export async function verifyIntegrity(
 					'--json',
 				],
 				{ doNotHandleError: true },
+				npmPath,
 			);
 
 			const integrity = jsonParse(stdout);
@@ -156,6 +159,7 @@ export async function checkIfVersionExistsOrThrow(
 	packageName: string,
 	version: string,
 	registryUrl: string,
+	npmPath: string = 'npm',
 ): Promise<true> {
 	const url = `${sanitizeRegistryUrl(registryUrl)}/${encodeURIComponent(packageName)}`;
 
@@ -173,6 +177,7 @@ export async function checkIfVersionExistsOrThrow(
 					'--json',
 				],
 				{ doNotHandleError: true },
+				npmPath,
 			);
 
 			const versionInfo = jsonParse(stdout);
