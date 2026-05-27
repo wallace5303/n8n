@@ -111,10 +111,15 @@ build:deploy
 # 创建 tar.gz 压缩包，自动将软链接替换为实际文件，-C 切换目录，后面是文件名
 tar --dereference -czf n8n-compiled.tar.gz -C /Users/gsx/www/gofile/src/common/n8n compiled
 
+# 移动到 umaAI
+mv n8n-compiled.tar.gz ~/www/bilibili/my/uma-ai/build/extraResources
+cd ~/www/bilibili/my/uma-ai/build/extraResources
+tar -xzf n8n-compiled.tar.gz
+
 # 打的压缩包可能有问题，先按下面处理
 # 找个目录去解压 tar.gz
 # 修改 semver 的代码
-#修改 /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources/compiled/node_modules/semver/classes/range.js ：
+#修改 /Users/gsx/www/bilibili/my/uma-ai/build/extraResources/compiled/node_modules/semver/classes/range.js ：
 
 // 第 201 行
 const LRU = require('lru-cache')
@@ -126,9 +131,12 @@ const cache = new LRUCache({ max: 1000 })
 
 # 替换 env
 
+# 替换 中文 ui
+# 把 editor-ui.tar.gz 解压到 dist目录下替换
+/Users/gsx/www/bilibili/my/uma-ai/build/extraResources/compiled/node_modules/n8n-editor-ui/dist
 
 # 然后重新生产 tar.gz；-C 切换目录，后面是文件名
-tar -czf compiled.tar.gz -C /Users/gsx/www/gofile/src/common/duola-ai/build/extraResources compiled
+tar -czf compiled.tar.gz -C /Users/gsx/www/bilibili/my/uma-ai/build/extraResources compiled
 
 ```
 
